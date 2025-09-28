@@ -33,6 +33,9 @@ try {
 // Obter preço por kg da sessão ou usar padrão
 $preco_por_kg = isset($_SESSION['preco_por_kg']) ? $_SESSION['preco_por_kg'] : 15.00;
 
+// Obter data da ordem de compra da sessão ou usar data atual
+$data_ordem = isset($_SESSION['data_ordem']) ? $_SESSION['data_ordem'] : date('Y-m-d');
+
 // Processar formulário
 if ($_POST) {
     if (isset($_POST['action'])) {
@@ -62,6 +65,12 @@ if ($_POST) {
 if (isset($_POST['config_preco_kg'])) {
     $_SESSION['preco_por_kg'] = floatval($_POST['preco_por_kg']);
     $preco_por_kg = $_SESSION['preco_por_kg'];
+}
+
+// Processar configuração de data da ordem
+if (isset($_POST['config_data_ordem'])) {
+    $_SESSION['data_ordem'] = $_POST['data_ordem'];
+    $data_ordem = $_SESSION['data_ordem'];
 }
 
 // Buscar produtos
@@ -263,16 +272,28 @@ $produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FE
         </div>
         
         <div class="form-section">
-            <h2>Configuração de Preços</h2>
-            <form method="POST" style="margin-bottom: 30px;">
-                <input type="hidden" name="config_preco_kg" value="1">
-                <div class="form-group">
-                    <label for="preco_por_kg">Preço por Quilo (R$)</label>
-                    <input type="number" id="preco_por_kg" name="preco_por_kg" step="0.01" min="0" value="<?= $preco_por_kg ?>" required>
-                    <small style="color: #666; font-size: 12px;">Todos os produtos por kg terão este preço fixo</small>
-                </div>
-                <button type="submit" class="btn btn-success">Salvar Preço por Kg</button>
-            </form>
+            <h2>Configuração da Ordem de Compra</h2>
+            <div class="form-row">
+                <form method="POST" style="margin-bottom: 30px; flex: 1; margin-right: 15px;">
+                    <input type="hidden" name="config_preco_kg" value="1">
+                    <div class="form-group">
+                        <label for="preco_por_kg">Preço por Quilo (R$)</label>
+                        <input type="number" id="preco_por_kg" name="preco_por_kg" step="0.01" min="0" value="<?= $preco_por_kg ?>" required>
+                        <small style="color: #666; font-size: 12px;">Todos os produtos por kg terão este preço fixo</small>
+                    </div>
+                    <button type="submit" class="btn btn-success">Salvar Preço por Kg</button>
+                </form>
+                
+                <form method="POST" style="margin-bottom: 30px; flex: 1; margin-left: 15px;">
+                    <input type="hidden" name="config_data_ordem" value="1">
+                    <div class="form-group">
+                        <label for="data_ordem">Data da Ordem de Compra</label>
+                        <input type="date" id="data_ordem" name="data_ordem" value="<?= $data_ordem ?>" required>
+                        <small style="color: #666; font-size: 12px;">Data que aparecerá no PDF da ordem de compra</small>
+                    </div>
+                    <button type="submit" class="btn btn-success">Salvar Data</button>
+                </form>
+            </div>
         </div>
         
         <div class="form-section">

@@ -25,8 +25,12 @@ $produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 // Obter preço por kg da sessão ou usar padrão
 $preco_por_kg = isset($_SESSION['preco_por_kg']) ? $_SESSION['preco_por_kg'] : 15.00;
 
+// Obter data da ordem da sessão ou usar data atual
+$data_ordem = isset($_SESSION['data_ordem']) ? $_SESSION['data_ordem'] : date('Y-m-d');
+
 // Debug: Verificar dados da sessão
 error_log("PDF Debug - Preço por kg: " . $preco_por_kg);
+error_log("PDF Debug - Data da ordem: " . $data_ordem);
 error_log("PDF Debug - Total produtos: " . count($produtos));
 
 // Criar PDF
@@ -59,7 +63,13 @@ $pdf->Ln(8);
 $pdf->SetFont('helvetica', '', 12);
 $pdf->SetTextColor(102, 102, 102);
 $pdf->Cell(0, 6, 'Cliente: ' . (isset($_SESSION['username']) ? $_SESSION['username'] : 'Sistema de Gestão de Produtos'), 0, 1, 'C');
-$pdf->Ln(10);
+$pdf->Ln(5);
+
+// Data da ordem de compra
+$pdf->SetFont('helvetica', 'B', 11);
+$pdf->SetTextColor(67, 126, 234);
+$pdf->Cell(0, 6, 'Data da Ordem: ' . date('d/m/Y', strtotime($data_ordem)), 0, 1, 'C');
+$pdf->Ln(8);
 
 // Data de geração
 $pdf->SetFont('helvetica', '', 10);
