@@ -13,8 +13,16 @@ $produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FE
 $preco_por_kg = isset($_SESSION['preco_por_kg']) ? $_SESSION['preco_por_kg'] : 15.00;
 
 echo "<h1>Debug PDF - Dados dos Produtos</h1>";
-echo "<p><strong>Preço por kg:</strong> R$ " . number_format($preco_por_kg, 2, ',', '.') . "</p>";
+echo "<p><strong>Preço por kg da sessão:</strong> R$ " . number_format($preco_por_kg, 2, ',', '.') . "</p>";
 echo "<p><strong>Total de produtos:</strong> " . count($produtos) . "</p>";
+echo "<p><strong>Timestamp:</strong> " . date('Y-m-d H:i:s') . "</p>";
+echo "<p><strong>Session ID:</strong> " . session_id() . "</p>";
+
+// Verificar se há dados na sessão
+echo "<h2>Dados da Sessão</h2>";
+echo "<pre>";
+print_r($_SESSION);
+echo "</pre>";
 
 if (empty($produtos)) {
     echo "<p>Nenhum produto encontrado no banco de dados.</p>";

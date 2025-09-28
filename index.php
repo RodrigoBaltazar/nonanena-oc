@@ -343,7 +343,7 @@ $produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FE
             
             <?php if (!empty($produtos)): ?>
                 <div class="actions">
-                    <a href="gerar_pdf.php" class="btn btn-success" target="_blank">📄 Gerar PDF</a>
+                    <a href="gerar_pdf.php?t=<?= time() ?>" class="btn btn-success" target="_blank">📄 Gerar PDF</a>
                     <button onclick="window.print()" class="btn">🖨️ Imprimir</button>
                 </div>
             <?php endif; ?>

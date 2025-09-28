@@ -5,15 +5,29 @@ require_once 'config.php';
 // Verificar se usuário está logado
 requireLogin();
 
+// Headers para evitar cache
+header('Cache-Control: no-cache, no-store, must-revalidate');
+header('Pragma: no-cache');
+header('Expires: 0');
+
 // Incluir TCPDF
 require_once('vendor/tecnickcom/tcpdf/tcpdf.php');
 
 // Conectar ao banco
 $db = new PDO('sqlite:' . DB_PATH);
-$produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FETCH_ASSOC);
+$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+// Buscar produtos com dados frescos
+$stmt = $db->prepare("SELECT * FROM produtos ORDER BY nome");
+$stmt->execute();
+$produtos = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
 // Obter preço por kg da sessão ou usar padrão
 $preco_por_kg = isset($_SESSION['preco_por_kg']) ? $_SESSION['preco_por_kg'] : 15.00;
+
+// Debug: Verificar dados da sessão
+error_log("PDF Debug - Preço por kg: " . $preco_por_kg);
+error_log("PDF Debug - Total produtos: " . count($produtos));
 
 // Criar PDF
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
