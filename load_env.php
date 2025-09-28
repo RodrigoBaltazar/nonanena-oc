@@ -65,5 +65,5 @@ function env($key, $default = null) {
 }
 
 // Carregar arquivo .env se existir
-loadEnv();
+loadEnv(__DIR__ . '/.env');
 ?>

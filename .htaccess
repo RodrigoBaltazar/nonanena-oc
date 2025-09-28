@@ -1,41 +1,21 @@
 # Proteção do sistema de gestão de produtos
 
-# Proteger arquivos sensíveis
+# Bloquear acesso a arquivos sensíveis
 <Files "config.php">
-    Order Allow,Deny
-    Deny from all
-</Files>
-
-<Files "data">
-    Order Allow,Deny
-    Deny from all
+    Require all denied
 </Files>
 
 <Files "*.db">
-    Order Allow,Deny
-    Deny from all
+    Require all denied
 </Files>
 
 <Files "*.sqlite">
-    Order Allow,Deny
-    Deny from all
+    Require all denied
 </Files>
 
 <Files "*.sqlite3">
-    Order Allow,Deny
-    Deny from all
+    Require all denied
 </Files>
-
-# Proteger diretórios
-<Directory "data">
-    Order Allow,Deny
-    Deny from all
-</Directory>
-
-<Directory "uploads">
-    Order Allow,Deny
-    Deny from all
-</Directory>
 
 # Redirecionar para login se não estiver logado
 RewriteEngine On

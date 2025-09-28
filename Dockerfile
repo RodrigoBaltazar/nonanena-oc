@@ -54,7 +54,8 @@ EXPOSE 80
 
 # Copiar script de inicialização
 COPY start.sh /usr/local/bin/start.sh
-RUN chmod +x /usr/local/bin/start.sh
+COPY docker-start.sh /usr/local/bin/docker-start.sh
+RUN chmod +x /usr/local/bin/start.sh /usr/local/bin/docker-start.sh
 
 # Comando para iniciar Apache
-CMD ["/usr/local/bin/start.sh"]
+CMD ["/usr/local/bin/docker-start.sh"]

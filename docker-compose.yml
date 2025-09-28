@@ -11,8 +11,8 @@ services:
       - ./data:/var/www/html/data
       # Persistir uploads (se houver)
       - ./uploads:/var/www/html/uploads
-      # Montar arquivo .env se existir
-      - ./.env:/var/www/html/.env:ro
+      # Montar diretório atual para acessar .env
+      - .:/host:ro
     environment:
       - APACHE_DOCUMENT_ROOT=/var/www/html
     restart: unless-stopped
