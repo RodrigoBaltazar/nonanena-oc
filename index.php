@@ -19,17 +19,36 @@ $db->exec("CREATE TABLE IF NOT EXISTS produtos (
     nome TEXT NOT NULL,
     tipo TEXT NOT NULL CHECK(tipo IN ('kg', 'unidade')),
     preco REAL NOT NULL,
+    peso_gramas INTEGER DEFAULT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 )");
+
+// Adicionar coluna peso_gramas se não existir (para tabelas já criadas)
+try {
+    $db->exec("ALTER TABLE produtos ADD COLUMN peso_gramas INTEGER DEFAULT NULL");
+} catch (PDOException $e) {
+    // Coluna já existe, ignorar erro
+}
+
+// Obter preço por kg da sessão ou usar padrão
+$preco_por_kg = isset($_SESSION['preco_por_kg']) ? $_SESSION['preco_por_kg'] : 15.00;
 
 // Processar formulário
 if ($_POST) {
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {
             case 'add':
-                $preco = ($_POST['tipo'] == 'kg') ? $_POST['preco_kg'] : $_POST['preco'];
-                $stmt = $db->prepare("INSERT INTO produtos (nome, tipo, preco) VALUES (?, ?, ?)");
-                $stmt->execute([$_POST['nome'], $_POST['tipo'], $preco]);
+                if ($_POST['tipo'] == 'kg') {
+                    // Para produtos por kg, calcular preço baseado no peso
+                    $peso_gramas = intval($_POST['peso_gramas']);
+                    $preco = ($peso_gramas / 1000) * $preco_por_kg; // Converter gramas para kg
+                    $stmt = $db->prepare("INSERT INTO produtos (nome, tipo, preco, peso_gramas) VALUES (?, ?, ?, ?)");
+                    $stmt->execute([$_POST['nome'], $_POST['tipo'], $preco, $peso_gramas]);
+                } else {
+                    // Para produtos por unidade, usar preço direto
+                    $stmt = $db->prepare("INSERT INTO produtos (nome, tipo, preco) VALUES (?, ?, ?)");
+                    $stmt->execute([$_POST['nome'], $_POST['tipo'], $_POST['preco']]);
+                }
                 break;
             case 'delete':
                 $stmt = $db->prepare("DELETE FROM produtos WHERE id = ?");
@@ -38,9 +57,6 @@ if ($_POST) {
         }
     }
 }
-
-// Obter preço por kg da sessão ou usar padrão
-$preco_por_kg = isset($_SESSION['preco_por_kg']) ? $_SESSION['preco_por_kg'] : 15.00;
 
 // Processar configuração de preço por kg
 if (isset($_POST['config_preco_kg'])) {
@@ -277,8 +293,10 @@ $produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FE
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="preco">Preço</label>
-                        <input type="number" id="preco" name="preco" step="0.01" min="0" required>
+                        <label for="peso_gramas" id="peso_label" style="display: none;">Peso (gramas)</label>
+                        <label for="preco" id="preco_label">Preço</label>
+                        <input type="number" id="peso_gramas" name="peso_gramas" min="1" style="display: none;">
+                        <input type="number" id="preco" name="preco" step="0.01" min="0">
                         <input type="hidden" id="preco_kg" name="preco_kg" value="<?= $preco_por_kg ?>">
                     </div>
                 </div>
@@ -300,14 +318,16 @@ $produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FE
                             <div class="product-name"><?= htmlspecialchars($produto['nome']) ?></div>
                             <div class="product-details">
                                 Tipo: <?= $produto['tipo'] == 'kg' ? 'Por Quilo' : 'Por Unidade' ?>
-                                <?php if ($produto['tipo'] == 'kg'): ?>
-                                    <br><small style="color: #999;">Preço fixo por kg: R$ <?= number_format($preco_por_kg, 2, ',', '.') ?></small>
+                                <?php if ($produto['tipo'] == 'kg' && isset($produto['peso_gramas'])): ?>
+                                    <br>Peso: <?= number_format($produto['peso_gramas'], 0, ',', '.') ?>g
+                                    <br><small style="color: #999;">Preço por kg: R$ <?= number_format($preco_por_kg, 2, ',', '.') ?></small>
                                 <?php endif; ?>
                             </div>
                         </div>
                         <div class="product-price">
                             <?php if ($produto['tipo'] == 'kg'): ?>
-                                R$ <?= number_format($preco_por_kg, 2, ',', '.') ?>/kg
+                                R$ <?= number_format($produto['preco'], 2, ',', '.') ?>
+                                <br><small style="color: #999;">(<?= number_format($preco_por_kg, 2, ',', '.') ?>/kg)</small>
                             <?php else: ?>
                                 R$ <?= number_format($produto['preco'], 2, ',', '.') ?>/unidade
                             <?php endif; ?>
@@ -331,30 +351,40 @@ $produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FE
     </div>
     
     <script>
-        // Função para controlar campo de preço
+        // Função para controlar campos do formulário
         function togglePrecoField() {
             const tipo = document.getElementById('tipo').value;
             const precoField = document.getElementById('preco');
-            const precoLabel = precoField.previousElementSibling;
+            const pesoField = document.getElementById('peso_gramas');
+            const precoLabel = document.getElementById('preco_label');
+            const pesoLabel = document.getElementById('peso_label');
             
             if (tipo === 'kg') {
-                precoField.value = '<?= $preco_por_kg ?>';
-                precoField.readOnly = true;
-                precoField.style.backgroundColor = '#f5f5f5';
-                precoLabel.textContent = 'Preço (automático)';
-                precoLabel.innerHTML += '<br><small style="color: #666;">Usa o preço fixo por kg configurado acima</small>';
+                // Mostrar campo de peso, esconder campo de preço
+                pesoField.style.display = 'block';
+                pesoField.required = true;
+                precoField.style.display = 'none';
+                precoField.required = false;
+                pesoLabel.style.display = 'block';
+                precoLabel.style.display = 'none';
+                pesoField.value = '';
             } else if (tipo === 'unidade') {
+                // Mostrar campo de preço, esconder campo de peso
+                precoField.style.display = 'block';
+                precoField.required = true;
+                pesoField.style.display = 'none';
+                pesoField.required = false;
+                precoLabel.style.display = 'block';
+                pesoLabel.style.display = 'none';
                 precoField.value = '';
-                precoField.readOnly = false;
-                precoField.style.backgroundColor = '';
-                precoLabel.textContent = 'Preço por Unidade';
-                precoLabel.innerHTML = precoLabel.textContent;
             } else {
-                precoField.value = '';
-                precoField.readOnly = false;
-                precoField.style.backgroundColor = '';
-                precoLabel.textContent = 'Preço';
-                precoLabel.innerHTML = precoLabel.textContent;
+                // Esconder ambos os campos
+                precoField.style.display = 'none';
+                pesoField.style.display = 'none';
+                precoField.required = false;
+                pesoField.required = false;
+                precoLabel.style.display = 'none';
+                pesoLabel.style.display = 'none';
             }
         }
         
