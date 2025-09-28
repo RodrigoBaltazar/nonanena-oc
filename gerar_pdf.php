@@ -97,6 +97,7 @@ if (empty($produtos)) {
     $total_produtos = 0;
     $valor_total = 0;
     $alternate = false;
+    $contador = 1; // Contador sequencial começando em 1
     
     foreach ($produtos as $produto) {
         // Alternar cor de fundo para melhor legibilidade
@@ -106,7 +107,7 @@ if (empty($produtos)) {
             $pdf->SetFillColor(255, 255, 255); // Branco
         }
         
-        $pdf->Cell(15, 8, $produto['id'], 1, 0, 'C', true);
+        $pdf->Cell(15, 8, $contador, 1, 0, 'C', true);
         $pdf->Cell(40, 8, $produto['nome'], 1, 0, 'L', true);
         $pdf->Cell(25, 8, $produto['tipo'] == 'kg' ? 'Por Quilo' : 'Por Unidade', 1, 0, 'C', true);
         
@@ -129,6 +130,7 @@ if (empty($produtos)) {
         // Somar ao valor total
         $valor_total += $produto['preco'];
         $total_produtos++;
+        $contador++; // Incrementar contador sequencial
         $alternate = !$alternate; // Alternar cor
         
         $pdf->Ln();
