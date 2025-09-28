@@ -13,6 +13,13 @@ services:
       - ./uploads:/var/www/html/uploads
       # Montar diretório atual para acessar .env
       - .:/host:ro
+      # Montar arquivos PHP para desenvolvimento
+      - ./index.php:/var/www/html/index.php
+      - ./gerar_pdf.php:/var/www/html/gerar_pdf.php
+      - ./config.php:/var/www/html/config.php
+      - ./login.php:/var/www/html/login.php
+      - ./logout.php:/var/www/html/logout.php
+      - ./load_env.php:/var/www/html/load_env.php
     environment:
       - APACHE_DOCUMENT_ROOT=/var/www/html
     restart: unless-stopped

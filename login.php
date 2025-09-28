@@ -230,8 +230,8 @@ if ($_POST) {
         
         <div class="credentials">
             <h3>🔑 Credenciais de Acesso</h3>
-            <p><strong>Usuário:</strong> admin</p>
-            <p><strong>Senha:</strong> admin123</p>
+            <p><strong>Usuário:</strong> nonanena</p>
+            <p><strong>Senha:</strong> nonanena</p>
             <p style="color: #999; font-size: 0.8rem; margin-top: 10px;">
                 ⚠️ Altere estas credenciais em config.php
             </p>

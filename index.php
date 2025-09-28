@@ -27,8 +27,9 @@ if ($_POST) {
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {
             case 'add':
+                $preco = ($_POST['tipo'] == 'kg') ? $_POST['preco_kg'] : $_POST['preco'];
                 $stmt = $db->prepare("INSERT INTO produtos (nome, tipo, preco) VALUES (?, ?, ?)");
-                $stmt->execute([$_POST['nome'], $_POST['tipo'], $_POST['preco']]);
+                $stmt->execute([$_POST['nome'], $_POST['tipo'], $preco]);
                 break;
             case 'delete':
                 $stmt = $db->prepare("DELETE FROM produtos WHERE id = ?");
@@ -36,6 +37,15 @@ if ($_POST) {
                 break;
         }
     }
+}
+
+// Obter preço por kg da sessão ou usar padrão
+$preco_por_kg = isset($_SESSION['preco_por_kg']) ? $_SESSION['preco_por_kg'] : 15.00;
+
+// Processar configuração de preço por kg
+if (isset($_POST['config_preco_kg'])) {
+    $_SESSION['preco_por_kg'] = floatval($_POST['preco_por_kg']);
+    $preco_por_kg = $_SESSION['preco_por_kg'];
 }
 
 // Buscar produtos
@@ -237,6 +247,19 @@ $produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FE
         </div>
         
         <div class="form-section">
+            <h2>Configuração de Preços</h2>
+            <form method="POST" style="margin-bottom: 30px;">
+                <input type="hidden" name="config_preco_kg" value="1">
+                <div class="form-group">
+                    <label for="preco_por_kg">Preço por Quilo (R$)</label>
+                    <input type="number" id="preco_por_kg" name="preco_por_kg" step="0.01" min="0" value="<?= $preco_por_kg ?>" required>
+                    <small style="color: #666; font-size: 12px;">Todos os produtos por kg terão este preço fixo</small>
+                </div>
+                <button type="submit" class="btn btn-success">Salvar Preço por Kg</button>
+            </form>
+        </div>
+        
+        <div class="form-section">
             <h2>Adicionar Produto</h2>
             <form method="POST">
                 <input type="hidden" name="action" value="add">
@@ -247,7 +270,7 @@ $produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FE
                 <div class="form-row">
                     <div class="form-group">
                         <label for="tipo">Tipo</label>
-                        <select id="tipo" name="tipo" required>
+                        <select id="tipo" name="tipo" required onchange="togglePrecoField()">
                             <option value="">Selecione...</option>
                             <option value="kg">Por Quilo (kg)</option>
                             <option value="unidade">Por Unidade</option>
@@ -256,6 +279,7 @@ $produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FE
                     <div class="form-group">
                         <label for="preco">Preço</label>
                         <input type="number" id="preco" name="preco" step="0.01" min="0" required>
+                        <input type="hidden" id="preco_kg" name="preco_kg" value="<?= $preco_por_kg ?>">
                     </div>
                 </div>
                 <button type="submit" class="btn">Adicionar Produto</button>
@@ -276,10 +300,17 @@ $produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FE
                             <div class="product-name"><?= htmlspecialchars($produto['nome']) ?></div>
                             <div class="product-details">
                                 Tipo: <?= $produto['tipo'] == 'kg' ? 'Por Quilo' : 'Por Unidade' ?>
+                                <?php if ($produto['tipo'] == 'kg'): ?>
+                                    <br><small style="color: #999;">Preço fixo por kg: R$ <?= number_format($preco_por_kg, 2, ',', '.') ?></small>
+                                <?php endif; ?>
                             </div>
                         </div>
                         <div class="product-price">
-                            R$ <?= number_format($produto['preco'], 2, ',', '.') ?>
+                            <?php if ($produto['tipo'] == 'kg'): ?>
+                                R$ <?= number_format($preco_por_kg, 2, ',', '.') ?>/kg
+                            <?php else: ?>
+                                R$ <?= number_format($produto['preco'], 2, ',', '.') ?>/unidade
+                            <?php endif; ?>
                         </div>
                         <form method="POST" style="display: inline;">
                             <input type="hidden" name="action" value="delete">
@@ -300,6 +331,33 @@ $produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FE
     </div>
     
     <script>
+        // Função para controlar campo de preço
+        function togglePrecoField() {
+            const tipo = document.getElementById('tipo').value;
+            const precoField = document.getElementById('preco');
+            const precoLabel = precoField.previousElementSibling;
+            
+            if (tipo === 'kg') {
+                precoField.value = '<?= $preco_por_kg ?>';
+                precoField.readOnly = true;
+                precoField.style.backgroundColor = '#f5f5f5';
+                precoLabel.textContent = 'Preço (automático)';
+                precoLabel.innerHTML += '<br><small style="color: #666;">Usa o preço fixo por kg configurado acima</small>';
+            } else if (tipo === 'unidade') {
+                precoField.value = '';
+                precoField.readOnly = false;
+                precoField.style.backgroundColor = '';
+                precoLabel.textContent = 'Preço por Unidade';
+                precoLabel.innerHTML = precoLabel.textContent;
+            } else {
+                precoField.value = '';
+                precoField.readOnly = false;
+                precoField.style.backgroundColor = '';
+                precoLabel.textContent = 'Preço';
+                precoLabel.innerHTML = precoLabel.textContent;
+            }
+        }
+        
         // Registrar Service Worker para PWA
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js');

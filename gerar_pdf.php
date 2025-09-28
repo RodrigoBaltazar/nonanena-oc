@@ -12,6 +12,9 @@ require_once('vendor/tecnickcom/tcpdf/tcpdf.php');
 $db = new PDO('sqlite:' . DB_PATH);
 $produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FETCH_ASSOC);
 
+// Obter preço por kg da sessão ou usar padrão
+$preco_por_kg = isset($_SESSION['preco_por_kg']) ? $_SESSION['preco_por_kg'] : 15.00;
+
 // Criar PDF
 $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
@@ -62,7 +65,13 @@ if (empty($produtos)) {
     foreach ($produtos as $produto) {
         $pdf->Cell(80, 6, $produto['nome'], 1, 0, 'L');
         $pdf->Cell(40, 6, $produto['tipo'] == 'kg' ? 'Por Quilo' : 'Por Unidade', 1, 0, 'C');
-        $pdf->Cell(40, 6, 'R$ ' . number_format($produto['preco'], 2, ',', '.'), 1, 0, 'R');
+        
+        // Mostrar preço baseado no tipo
+        if ($produto['tipo'] == 'kg') {
+            $pdf->Cell(40, 6, 'R$ ' . number_format($preco_por_kg, 2, ',', '.') . '/kg', 1, 0, 'R');
+        } else {
+            $pdf->Cell(40, 6, 'R$ ' . number_format($produto['preco'], 2, ',', '.') . '/unidade', 1, 0, 'R');
+        }
         $pdf->Ln();
     }
     
