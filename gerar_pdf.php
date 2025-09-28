@@ -79,5 +79,5 @@ $pdf->SetFont('helvetica', 'I', 8);
 $pdf->Cell(0, 10, 'Página ' . $pdf->getAliasNumPage() . ' de ' . $pdf->getAliasNbPages(), 0, 0, 'C');
 
 // Gerar PDF
-$pdf->Output('relatorio_produtos_' . date('Y-m-d_H-i-s') . '.pdf', 'D');
+$pdf->Output('relatorio_produtos_' . date('Y-m-d_H-i-s') . '.pdf', 'I');
 ?>
