@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: produtos-app
+    expose:
+      - "80"  # Só expõe internamente
+    volumes:
+      - ./data:/var/www/html/data
+      - ./uploads:/var/www/html/uploads
+    environment:
+      - APACHE_DOCUMENT_ROOT=/var/www/html
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: produtos-nginx
+    ports:
+      - "80:80"  # Nginx na porta 80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx-proxy.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+    restart: unless-stopped

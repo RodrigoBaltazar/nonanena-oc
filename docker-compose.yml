@@ -5,7 +5,7 @@ services:
     build: .
     container_name: produtos-app
     ports:
-      - "8000:80"
+      - "8080:80"  # Mude para 8080 para evitar conflitos
     volumes:
       # Persistir banco de dados SQLite
       - ./data:/var/www/html/data
