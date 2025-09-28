@@ -14,18 +14,18 @@ Este repositório é **público no GitHub**. As credenciais sensíveis devem ser
 
 ## 🚀 **Configuração Rápida na VPS**
 
-### **Método 1: Script Automático (Recomendado)**
+### **Método 1: Deploy Docker Completo (Recomendado)**
 ```bash
 # Na VPS
 git clone https://github.com/SEU_USUARIO/sistema-gestao-produtos.git
 cd sistema-gestao-produtos
 
-# Executar script de configuração
-sudo chmod +x setup-producao.sh
-sudo ./setup-producao.sh
+# Deploy completo com Docker
+chmod +x docker-deploy.sh
+./docker-deploy.sh
 ```
 
-### **Método 2: Configuração Manual**
+### **Método 2: Configuração Manual + Docker**
 ```bash
 # 1. Copiar template
 cp env.example .env
@@ -33,9 +33,18 @@ cp env.example .env
 # 2. Editar credenciais
 nano .env
 
-# 3. Definir permissões
-chmod 600 .env
-chown www-data:www-data .env
+# 3. Iniciar Docker
+docker-compose up -d
+```
+
+### **Método 3: Script de Configuração + Docker**
+```bash
+# 1. Configurar credenciais
+sudo chmod +x setup-producao.sh
+sudo ./setup-producao.sh
+
+# 2. Iniciar Docker
+docker-compose up -d
 ```
 
 ## ⚙️ **Configurações Disponíveis**
@@ -131,6 +140,20 @@ git status
 # .env não deve aparecer na lista
 ```
 
+## 🐳 **Docker e Sistema .env**
+
+### **Como o Docker funciona com .env:**
+- O arquivo `.env` é montado como volume no container
+- Permissões são mantidas (600) para segurança
+- Container acessa as configurações via `load_env.php`
+- Não há interferência no funcionamento do Docker
+
+### **Volume do .env no Docker:**
+```yaml
+volumes:
+  - ./.env:/var/www/html/.env:ro  # Somente leitura
+```
+
 ## 🔄 **Fluxo de Deploy**
 
 ### **1. Desenvolvimento Local:**
@@ -144,13 +167,11 @@ git status
 git clone https://github.com/SEU_USUARIO/sistema-gestao-produtos.git
 cd sistema-gestao-produtos
 
-# 2. Configurar credenciais
-sudo ./setup-producao.sh
+# 2. Deploy completo com Docker
+chmod +x docker-deploy.sh
+./docker-deploy.sh
 
-# 3. Iniciar aplicação
-docker-compose up -d
-
-# 4. Configurar Nginx
+# 3. Configurar Nginx (opcional)
 sudo cp oc.nonanena.com.br-http.conf /etc/nginx/sites-available/oc.nonanena.com.br
 sudo ln -s /etc/nginx/sites-available/oc.nonanena.com.br /etc/nginx/sites-enabled/
 sudo nginx -t
@@ -165,7 +186,7 @@ git pull
 # 2. Reconstruir container
 docker-compose up --build -d
 
-# 3. Recarregar Nginx
+# 3. Recarregar Nginx (se configurado)
 sudo systemctl reload nginx
 ```
 

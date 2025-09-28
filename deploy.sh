@@ -40,7 +40,20 @@ if [ -d ".git" ]; then
     git pull
 fi
 
-# 3. Construir e iniciar containers
+# 3. Verificar se arquivo .env existe
+if [ ! -f ".env" ]; then
+    print_warning "Arquivo .env não encontrado!"
+    print_status "Executando configuração automática..."
+    if [ -f "setup-producao.sh" ]; then
+        ./setup-producao.sh
+    else
+        print_error "Script de configuração não encontrado!"
+        print_warning "Crie o arquivo .env manualmente baseado em env.example"
+        exit 1
+    fi
+fi
+
+# 4. Construir e iniciar containers
 print_status "Construindo e iniciando containers..."
 docker-compose up --build -d
 

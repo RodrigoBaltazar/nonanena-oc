@@ -108,11 +108,9 @@ docker-compose build app
 git clone https://github.com/SEU_USUARIO/sistema-gestao-produtos.git
 cd sistema-gestao-produtos
 
-# 2. Configurar credenciais
-sudo ./setup-producao.sh
-
-# 3. Iniciar aplicação
-docker-compose up -d
+# 2. Deploy completo com Docker
+chmod +x docker-deploy.sh
+./docker-deploy.sh
 ```
 
 ### **Configuração Manual:**
