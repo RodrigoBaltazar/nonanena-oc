@@ -75,7 +75,8 @@ if (empty($produtos)) {
     
     // Dados dos produtos
     $pdf->SetFont('helvetica', '', 9);
-    $total = 0;
+    $total_produtos = 0;
+    $valor_total = 0;
     
     foreach ($produtos as $produto) {
         $pdf->Cell(50, 6, $produto['nome'], 1, 0, 'L');
@@ -94,13 +95,19 @@ if (empty($produtos)) {
         } else {
             $pdf->Cell(45, 6, 'R$ ' . number_format($produto['preco'], 2, ',', '.') . '', 1, 0, 'R');
         }
+        
+        // Somar ao valor total
+        $valor_total += $produto['preco'];
+        $total_produtos++;
+        
         $pdf->Ln();
     }
     
-    // Linha de total (se necessário)
+    // Linha de total
     $pdf->SetFont('helvetica', 'B', 10);
-    $pdf->Cell(105, 6, 'TOTAL DE PRODUTOS:', 1, 0, 'R');
-    $pdf->Cell(45, 6, count($produtos), 1, 0, 'C');
+    $pdf->Cell(60, 6, 'TOTAL DE PRODUTOS:', 1, 0, 'R');
+    $pdf->Cell(30, 6, $total_produtos . ' itens', 1, 0, 'C');
+    $pdf->Cell(45, 6, 'R$ ' . number_format($valor_total, 2, ',', '.'), 1, 0, 'R');
     $pdf->Ln();
 }
 
