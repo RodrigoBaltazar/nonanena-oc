@@ -1,0 +1,14 @@
+{
+    "name": "produtos/app",
+    "description": "Sistema de gestão de produtos com PWA",
+    "type": "project",
+    "require": {
+        "php": ">=7.4",
+        "tecnickcom/tcpdf": "^6.4"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    }
+}

@@ -1,0 +1,65 @@
+# Dados do banco SQLite
+data/
+*.db
+*.sqlite
+*.sqlite3
+
+# Arquivos de upload
+uploads/
+
+# Dependências do Composer
+vendor/
+composer.lock
+
+# Logs
+*.log
+logs/
+
+# Arquivos temporários
+tmp/
+temp/
+*.tmp
+*.temp
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Cache
+cache/
+.cache/
+
+# Arquivos de configuração local
+.env
+.env.local
+.env.production
+
+# Arquivos de backup
+*.bak
+*.backup
+
+# Arquivos de teste
+test/
+tests/
+phpunit.xml
+
+# Arquivos de documentação gerados
+docs/build/
+
+# Node modules (se houver)
+node_modules/
+
+# Arquivos de build
+build/
+dist/
+
+# Arquivos de configuração do Docker (opcional)
+# docker-compose.override.yml

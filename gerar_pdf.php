@@ -1,0 +1,77 @@
+<?php
+// Incluir TCPDF
+require_once('tcpdf/tcpdf.php');
+
+// Conectar ao banco
+$db = new PDO('sqlite:data/produtos.db');
+$produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FETCH_ASSOC);
+
+// Criar PDF
+$pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+// Configurações do documento
+$pdf->SetCreator('Sistema de Gestão de Produtos');
+$pdf->SetAuthor('Sistema de Produtos');
+$pdf->SetTitle('Relatório de Produtos');
+$pdf->SetSubject('Listagem de Produtos');
+
+// Configurações de margem
+$pdf->SetMargins(15, 15, 15);
+$pdf->SetHeaderMargin(5);
+$pdf->SetFooterMargin(10);
+
+// Configurações de fonte
+$pdf->SetFont('helvetica', '', 10);
+
+// Adicionar página
+$pdf->AddPage();
+
+// Título
+$pdf->SetFont('helvetica', 'B', 16);
+$pdf->Cell(0, 10, 'RELATÓRIO DE PRODUTOS', 0, 1, 'C');
+$pdf->Ln(10);
+
+// Data de geração
+$pdf->SetFont('helvetica', '', 10);
+$pdf->Cell(0, 6, 'Gerado em: ' . date('d/m/Y H:i:s'), 0, 1, 'R');
+$pdf->Ln(5);
+
+if (empty($produtos)) {
+    $pdf->SetFont('helvetica', 'I', 12);
+    $pdf->Cell(0, 10, 'Nenhum produto cadastrado.', 0, 1, 'C');
+} else {
+    // Cabeçalho da tabela
+    $pdf->SetFont('helvetica', 'B', 10);
+    $pdf->SetFillColor(240, 240, 240);
+    
+    $pdf->Cell(80, 8, 'PRODUTO', 1, 0, 'C', true);
+    $pdf->Cell(40, 8, 'TIPO', 1, 0, 'C', true);
+    $pdf->Cell(40, 8, 'PREÇO', 1, 0, 'C', true);
+    $pdf->Ln();
+    
+    // Dados dos produtos
+    $pdf->SetFont('helvetica', '', 9);
+    $total = 0;
+    
+    foreach ($produtos as $produto) {
+        $pdf->Cell(80, 6, $produto['nome'], 1, 0, 'L');
+        $pdf->Cell(40, 6, $produto['tipo'] == 'kg' ? 'Por Quilo' : 'Por Unidade', 1, 0, 'C');
+        $pdf->Cell(40, 6, 'R$ ' . number_format($produto['preco'], 2, ',', '.'), 1, 0, 'R');
+        $pdf->Ln();
+    }
+    
+    // Linha de total (se necessário)
+    $pdf->SetFont('helvetica', 'B', 10);
+    $pdf->Cell(120, 6, 'TOTAL DE PRODUTOS:', 1, 0, 'R');
+    $pdf->Cell(40, 6, count($produtos), 1, 0, 'C');
+    $pdf->Ln();
+}
+
+// Rodapé
+$pdf->SetY(-20);
+$pdf->SetFont('helvetica', 'I', 8);
+$pdf->Cell(0, 10, 'Página ' . $pdf->getAliasNumPage() . ' de ' . $pdf->getAliasNbPages(), 0, 0, 'C');
+
+// Gerar PDF
+$pdf->Output('relatorio_produtos_' . date('Y-m-d_H-i-s') . '.pdf', 'D');
+?>
