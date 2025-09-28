@@ -9,6 +9,8 @@ Sistema web simples para cadastrar produtos e gerar relatórios em PDF, com supo
 - ✅ Gerar PDF com listagem
 - ✅ PWA (instalável no celular)
 - ✅ Interface responsiva
+- ✅ Sistema de login seguro
+- ✅ Proteção contra ataques de força bruta
 
 ## Instalação Rápida
 
@@ -53,16 +55,28 @@ http://localhost:8000
 
 ## Como Usar
 
-1. **Cadastrar Produto:**
+1. **Configurar Credenciais (Primeira vez):**
+   - Copie `env.example` para `.env`
+   - Edite as credenciais no arquivo `.env`
+   - Ou execute: `sudo ./setup-producao.sh`
+
+2. **Fazer Login:**
+   - Acesse o sistema
+   - Use as credenciais configuradas no `.env`
+
+3. **Cadastrar Produto:**
    - Preencha nome, tipo (kg/unidade) e preço
    - Clique em "Adicionar Produto"
 
-2. **Gerar PDF:**
+4. **Gerar PDF:**
    - Clique em "Gerar PDF" para baixar relatório
 
-3. **Instalar no Celular:**
+5. **Instalar no Celular:**
    - Acesse pelo navegador
    - Aparecerá opção "Instalar App"
+
+6. **Fazer Logout:**
+   - Clique em "Sair" no canto superior direito
 
 ## Comandos Docker
 
@@ -86,6 +100,35 @@ docker-compose exec app bash
 docker-compose build app
 ```
 
+## 🔐 Configuração de Produção
+
+### **Configuração Rápida:**
+```bash
+# 1. Clonar repositório
+git clone https://github.com/SEU_USUARIO/sistema-gestao-produtos.git
+cd sistema-gestao-produtos
+
+# 2. Configurar credenciais
+sudo ./setup-producao.sh
+
+# 3. Iniciar aplicação
+docker-compose up -d
+```
+
+### **Configuração Manual:**
+```bash
+# 1. Copiar template de configuração
+cp env.example .env
+
+# 2. Editar credenciais
+nano .env
+
+# 3. Definir permissões
+chmod 600 .env
+```
+
+📖 **Documentação completa:** [CONFIGURACAO-PRODUCAO.md](CONFIGURACAO-PRODUCAO.md)
+
 ## Tecnologias
 
 - **PHP 8.4** com Apache
@@ -93,6 +136,7 @@ docker-compose build app
 - **TCPDF** para geração de PDF
 - **PWA** (Service Worker + Manifest)
 - **Docker** para containerização
+- **Sistema de configuração .env** para credenciais seguras
 - **HTML/CSS/JavaScript** vanilla
 
 ## Banco de Dados

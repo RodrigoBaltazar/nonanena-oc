@@ -1,9 +1,15 @@
 <?php
+session_start();
+require_once 'config.php';
+
+// Verificar se usuário está logado
+requireLogin();
+
 // Incluir TCPDF
 require_once('tcpdf/tcpdf.php');
 
 // Conectar ao banco
-$db = new PDO('sqlite:data/produtos.db');
+$db = new PDO('sqlite:' . DB_PATH);
 $produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FETCH_ASSOC);
 
 // Criar PDF

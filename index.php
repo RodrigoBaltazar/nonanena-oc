@@ -1,5 +1,9 @@
 <?php
 session_start();
+require_once 'config.php';
+
+// Verificar se usuário está logado
+requireLogin();
 
 // Criar diretório data se não existir
 if (!is_dir('data')) {
@@ -7,7 +11,7 @@ if (!is_dir('data')) {
 }
 
 // Inicializar banco SQLite
-$db = new PDO('sqlite:data/produtos.db');
+$db = new PDO('sqlite:' . DB_PATH);
 
 // Criar tabela se não existir
 $db->exec("CREATE TABLE IF NOT EXISTS produtos (
@@ -216,8 +220,20 @@ $produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FE
 <body>
     <div class="container">
         <div class="header">
-            <h1>📦 Gestão de Produtos</h1>
-            <p>Cadastre produtos e gere relatórios em PDF</p>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <div>
+                    <h1>📦 Gestão de Produtos</h1>
+                    <p>Cadastre produtos e gere relatórios em PDF</p>
+                </div>
+                <div style="text-align: right;">
+                    <p style="color: rgba(255,255,255,0.8); margin-bottom: 10px;">
+                        Olá, <?= htmlspecialchars($_SESSION['username']) ?>
+                    </p>
+                    <a href="logout.php" style="color: white; text-decoration: none; background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; font-size: 14px; transition: background 0.3s;">
+                        🚪 Sair
+                    </a>
+                </div>
+            </div>
         </div>
         
         <div class="form-section">

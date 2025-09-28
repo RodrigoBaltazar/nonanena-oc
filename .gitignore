@@ -41,6 +41,8 @@ cache/
 .env
 .env.local
 .env.production
+.env.*
+!.env.example
 
 # Arquivos de backup
 *.bak
