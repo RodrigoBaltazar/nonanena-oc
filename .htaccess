@@ -30,7 +30,7 @@ RewriteCond %{REQUEST_URI} !^/favicon\.ico$
 
 # Verificar se não há sessão ativa (simplificado)
 RewriteCond %{HTTP_COOKIE} !PHPSESSID
-RewriteRule ^(.*)$ login.php [R=302,L]
+RewriteRule ^(.*)$ /login.php [R=302,L]
 
 # Headers de segurança
 <IfModule mod_headers.c>

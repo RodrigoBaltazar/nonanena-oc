@@ -42,6 +42,7 @@ RUN echo '<Directory /var/www/html>' >> /etc/apache2/apache2.conf \
 
 # Configurar virtual host
 RUN echo '<VirtualHost *:80>' > /etc/apache2/sites-available/000-default.conf \
+    && echo '    ServerName localhost' >> /etc/apache2/sites-available/000-default.conf \
     && echo '    DocumentRoot /var/www/html' >> /etc/apache2/sites-available/000-default.conf \
     && echo '    <Directory /var/www/html>' >> /etc/apache2/sites-available/000-default.conf \
     && echo '        AllowOverride All' >> /etc/apache2/sites-available/000-default.conf \
