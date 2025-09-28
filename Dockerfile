@@ -54,9 +54,8 @@ RUN echo '<VirtualHost *:80>' > /etc/apache2/sites-available/000-default.conf \
 EXPOSE 80
 
 # Copiar script de inicialização
-COPY start.sh /usr/local/bin/start.sh
 COPY docker-start.sh /usr/local/bin/docker-start.sh
-RUN chmod +x /usr/local/bin/start.sh /usr/local/bin/docker-start.sh
+RUN chmod +x /usr/local/bin/docker-start.sh
 
 # Comando para iniciar Apache
 CMD ["/usr/local/bin/docker-start.sh"]
