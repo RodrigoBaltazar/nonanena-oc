@@ -228,14 +228,14 @@ if ($_POST) {
             <button type="submit" class="btn">Entrar</button>
         </form>
         
-        <div class="credentials">
+        <!-- <div class="credentials">
             <h3>🔑 Credenciais de Acesso</h3>
             <p><strong>Usuário:</strong> nonanena</p>
             <p><strong>Senha:</strong> nonanena</p>
             <p style="color: #999; font-size: 0.8rem; margin-top: 10px;">
                 ⚠️ Altere estas credenciais em config.php
             </p>
-        </div>
+        </div> -->
         
         <div class="footer">
             <p>Versão <?= APP_VERSION ?></p>
