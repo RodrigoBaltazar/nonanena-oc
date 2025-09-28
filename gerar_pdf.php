@@ -52,13 +52,13 @@ $pdf->AddPage();
 // Título principal
 $pdf->SetFont('helvetica', 'B', 20);
 $pdf->SetTextColor(51, 51, 51);
-$pdf->Cell(0, 12, '📦 RELATÓRIO DE PRODUTOS', 0, 1, 'C');
+$pdf->Cell(0, 12, 'ORDEM DE COMPRA', 0, 1, 'C');
 $pdf->Ln(8);
 
-// Subtítulo
+// Nome do cliente (vem do index.php)
 $pdf->SetFont('helvetica', '', 12);
 $pdf->SetTextColor(102, 102, 102);
-$pdf->Cell(0, 6, 'Sistema de Gestão de Produtos', 0, 1, 'C');
+$pdf->Cell(0, 6, 'Cliente: ' . (isset($_SESSION['username']) ? $_SESSION['username'] : 'Sistema de Gestão de Produtos'), 0, 1, 'C');
 $pdf->Ln(10);
 
 // Data de geração
@@ -70,7 +70,7 @@ $pdf->Ln(8);
 if (empty($produtos)) {
     $pdf->SetFont('helvetica', 'I', 14);
     $pdf->SetTextColor(128, 128, 128);
-    $pdf->Cell(0, 15, '📭 Nenhum produto cadastrado', 0, 1, 'C');
+    $pdf->Cell(0, 15, 'Nenhum produto cadastrado', 0, 1, 'C');
     $pdf->Ln(5);
     $pdf->SetFont('helvetica', '', 10);
     $pdf->Cell(0, 8, 'Adicione produtos no sistema para gerar o relatório', 0, 1, 'C');
@@ -84,10 +84,11 @@ if (empty($produtos)) {
     $pdf->SetFillColor(67, 126, 234); // Azul moderno
     $pdf->SetTextColor(255, 255, 255); // Texto branco
     
-    $pdf->Cell(50, 10, 'PRODUTO', 1, 0, 'C', true);
-    $pdf->Cell(30, 10, 'TIPO', 1, 0, 'C', true);
-    $pdf->Cell(25, 10, 'PESO', 1, 0, 'C', true);
-    $pdf->Cell(45, 10, 'PREÇO', 1, 0, 'C', true);
+    $pdf->Cell(15, 10, 'ID', 1, 0, 'C', true);
+    $pdf->Cell(40, 10, 'PRODUTO', 1, 0, 'C', true);
+    $pdf->Cell(25, 10, 'TIPO', 1, 0, 'C', true);
+    $pdf->Cell(20, 10, 'PESO', 1, 0, 'C', true);
+    $pdf->Cell(40, 10, 'PREÇO', 1, 0, 'C', true);
     $pdf->Ln();
     
     // Dados dos produtos
@@ -105,23 +106,24 @@ if (empty($produtos)) {
             $pdf->SetFillColor(255, 255, 255); // Branco
         }
         
-        $pdf->Cell(50, 8, $produto['nome'], 1, 0, 'L', true);
-        $pdf->Cell(30, 8, $produto['tipo'] == 'kg' ? 'Por Quilo' : 'Por Unidade', 1, 0, 'C', true);
+        $pdf->Cell(15, 8, $produto['id'], 1, 0, 'C', true);
+        $pdf->Cell(40, 8, $produto['nome'], 1, 0, 'L', true);
+        $pdf->Cell(25, 8, $produto['tipo'] == 'kg' ? 'Por Quilo' : 'Por Unidade', 1, 0, 'C', true);
         
         // Mostrar peso baseado no tipo
         if ($produto['tipo'] == 'kg' && isset($produto['peso_gramas'])) {
-            $pdf->Cell(25, 8, number_format($produto['peso_gramas'], 0, ',', '.') . 'g', 1, 0, 'C', true);
+            $pdf->Cell(20, 8, number_format($produto['peso_gramas'], 0, ',', '.') . 'g', 1, 0, 'C', true);
         } else {
-            $pdf->Cell(25, 8, '-', 1, 0, 'C', true);
+            $pdf->Cell(20, 8, '-', 1, 0, 'C', true);
         }
         
         // Mostrar preço baseado no tipo
         if ($produto['tipo'] == 'kg') {
             $pdf->SetFont('helvetica', 'B', 9);
-            $pdf->Cell(45, 8, 'R$ ' . number_format($produto['preco'], 2, ',', '.') . ' (R$ ' . number_format($preco_por_kg, 2, ',', '.') . '/kg)', 1, 0, 'R', true);
+            $pdf->Cell(40, 8, 'R$ ' . number_format($produto['preco'], 2, ',', '.') . ' (R$ ' . number_format($preco_por_kg, 2, ',', '.') . '/kg)', 1, 0, 'R', true);
         } else {
             $pdf->SetFont('helvetica', 'B', 9);
-            $pdf->Cell(45, 8, 'R$ ' . number_format($produto['preco'], 2, ',', '.') . '', 1, 0, 'R', true);
+            $pdf->Cell(40, 8, 'R$ ' . number_format($produto['preco'], 2, ',', '.') . '', 1, 0, 'R', true);
         }
         
         // Somar ao valor total
@@ -136,17 +138,19 @@ if (empty($produtos)) {
     $pdf->SetFont('helvetica', 'B', 12);
     $pdf->SetFillColor(39, 174, 96); // Verde para destacar
     $pdf->SetTextColor(255, 255, 255); // Texto branco
-    $pdf->Cell(60, 10, 'TOTAL DE PRODUTOS:', 1, 0, 'R', true);
-    $pdf->Cell(30, 10, $total_produtos . ' itens', 1, 0, 'C', true);
-    $pdf->Cell(45, 10, 'R$ ' . number_format($valor_total, 2, ',', '.'), 1, 0, 'R', true);
+    $pdf->Cell(80, 10, 'TOTAL DE PRODUTOS:', 1, 0, 'R', true);
+    $pdf->Cell(20, 10, $total_produtos . ' itens', 1, 0, 'C', true);
+    $pdf->Cell(40, 10, 'R$ ' . number_format($valor_total, 2, ',', '.'), 1, 0, 'R', true);
     $pdf->Ln();
 }
 
 // Rodapé
-$pdf->SetY(-25);
+$pdf->SetY(-35);
 $pdf->SetFont('helvetica', 'I', 8);
 $pdf->SetTextColor(128, 128, 128);
-$pdf->Cell(0, 6, 'Sistema de Gestão de Produtos - Relatório gerado automaticamente', 0, 0, 'C');
+$pdf->Cell(0, 6, 'www.nonanena.com.br', 0, 0, 'C');
+$pdf->Ln(3);
+$pdf->Cell(0, 6, 'Desenvolvido por www.rodrigobaltazar.com.br', 0, 0, 'C');
 $pdf->Ln(3);
 $pdf->Cell(0, 6, 'Página ' . $pdf->getAliasNumPage() . ' de ' . $pdf->getAliasNbPages(), 0, 0, 'C');
 
