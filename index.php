@@ -36,6 +36,9 @@ $preco_por_kg = isset($_SESSION['preco_por_kg']) ? $_SESSION['preco_por_kg'] : 1
 // Obter data da ordem de compra da sessão ou usar data atual
 $data_ordem = isset($_SESSION['data_ordem']) ? $_SESSION['data_ordem'] : date('Y-m-d');
 
+// Obter nome do cliente da sessão ou usar nome do usuário
+$nome_cliente = isset($_SESSION['nome_cliente']) ? $_SESSION['nome_cliente'] : (isset($_SESSION['username']) ? $_SESSION['username'] : 'Sistema de Gestão de Produtos');
+
 // Processar formulário
 if ($_POST) {
     if (isset($_POST['action'])) {
@@ -71,6 +74,12 @@ if (isset($_POST['config_preco_kg'])) {
 if (isset($_POST['config_data_ordem'])) {
     $_SESSION['data_ordem'] = $_POST['data_ordem'];
     $data_ordem = $_SESSION['data_ordem'];
+}
+
+// Processar configuração de nome do cliente
+if (isset($_POST['config_nome_cliente'])) {
+    $_SESSION['nome_cliente'] = trim($_POST['nome_cliente']);
+    $nome_cliente = $_SESSION['nome_cliente'];
 }
 
 // Buscar produtos
@@ -273,6 +282,19 @@ $produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FE
         
         <div class="form-section">
             <h2>Configuração da Ordem de Compra</h2>
+            
+            <!-- Primeira linha: Nome do Cliente -->
+            <form method="POST" style="margin-bottom: 30px;">
+                <input type="hidden" name="config_nome_cliente" value="1">
+                <div class="form-group">
+                    <label for="nome_cliente">Nome do Cliente</label>
+                    <input type="text" id="nome_cliente" name="nome_cliente" value="<?= htmlspecialchars($nome_cliente) ?>" required>
+                    <small style="color: #666; font-size: 12px;">Nome que aparecerá no PDF da ordem de compra</small>
+                </div>
+                <button type="submit" class="btn btn-success">Salvar Nome do Cliente</button>
+            </form>
+            
+            <!-- Segunda linha: Preço e Data -->
             <div class="form-row">
                 <form method="POST" style="margin-bottom: 30px; flex: 1; margin-right: 15px;">
                     <input type="hidden" name="config_preco_kg" value="1">

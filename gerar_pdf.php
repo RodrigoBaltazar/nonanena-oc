@@ -28,9 +28,13 @@ $preco_por_kg = isset($_SESSION['preco_por_kg']) ? $_SESSION['preco_por_kg'] : 1
 // Obter data da ordem da sessão ou usar data atual
 $data_ordem = isset($_SESSION['data_ordem']) ? $_SESSION['data_ordem'] : date('Y-m-d');
 
+// Obter nome do cliente da sessão ou usar nome do usuário
+$nome_cliente = isset($_SESSION['nome_cliente']) ? $_SESSION['nome_cliente'] : (isset($_SESSION['username']) ? $_SESSION['username'] : 'Sistema de Gestão de Produtos');
+
 // Debug: Verificar dados da sessão
 error_log("PDF Debug - Preço por kg: " . $preco_por_kg);
 error_log("PDF Debug - Data da ordem: " . $data_ordem);
+error_log("PDF Debug - Nome do cliente: " . $nome_cliente);
 error_log("PDF Debug - Total produtos: " . count($produtos));
 
 // Criar PDF
@@ -62,7 +66,7 @@ $pdf->Ln(8);
 // Nome do cliente (vem do index.php)
 $pdf->SetFont('helvetica', '', 12);
 $pdf->SetTextColor(102, 102, 102);
-$pdf->Cell(0, 6, 'Cliente: ' . (isset($_SESSION['username']) ? $_SESSION['username'] : 'Sistema de Gestão de Produtos'), 0, 1, 'C');
+$pdf->Cell(0, 6, 'Cliente: ' . $nome_cliente, 0, 1, 'C');
 $pdf->Ln(5);
 
 // Data da ordem de compra
