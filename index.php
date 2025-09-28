@@ -329,7 +329,7 @@ $produtos = $db->query("SELECT * FROM produtos ORDER BY nome")->fetchAll(PDO::FE
                                 R$ <?= number_format($produto['preco'], 2, ',', '.') ?>
                                 <br><small style="color: #999;">(<?= number_format($preco_por_kg, 2, ',', '.') ?>/kg)</small>
                             <?php else: ?>
-                                R$ <?= number_format($produto['preco'], 2, ',', '.') ?>/unidade
+                                R$ <?= number_format($produto['preco'], 2, ',', '.') ?>
                             <?php endif; ?>
                         </div>
                         <form method="POST" style="display: inline;">

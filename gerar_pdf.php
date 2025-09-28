@@ -53,8 +53,9 @@ if (empty($produtos)) {
     $pdf->SetFont('helvetica', 'B', 10);
     $pdf->SetFillColor(240, 240, 240);
     
-    $pdf->Cell(80, 8, 'PRODUTO', 1, 0, 'C', true);
-    $pdf->Cell(40, 8, 'TIPO', 1, 0, 'C', true);
+    $pdf->Cell(60, 8, 'PRODUTO', 1, 0, 'C', true);
+    $pdf->Cell(30, 8, 'TIPO', 1, 0, 'C', true);
+    $pdf->Cell(30, 8, 'PESO', 1, 0, 'C', true);
     $pdf->Cell(40, 8, 'PREÇO', 1, 0, 'C', true);
     $pdf->Ln();
     
@@ -63,14 +64,21 @@ if (empty($produtos)) {
     $total = 0;
     
     foreach ($produtos as $produto) {
-        $pdf->Cell(80, 6, $produto['nome'], 1, 0, 'L');
-        $pdf->Cell(40, 6, $produto['tipo'] == 'kg' ? 'Por Quilo' : 'Por Unidade', 1, 0, 'C');
+        $pdf->Cell(60, 6, $produto['nome'], 1, 0, 'L');
+        $pdf->Cell(30, 6, $produto['tipo'] == 'kg' ? 'Por Quilo' : 'Por Unidade', 1, 0, 'C');
+        
+        // Mostrar peso baseado no tipo
+        if ($produto['tipo'] == 'kg' && isset($produto['peso_gramas'])) {
+            $pdf->Cell(30, 6, number_format($produto['peso_gramas'], 0, ',', '.') . 'g', 1, 0, 'C');
+        } else {
+            $pdf->Cell(30, 6, '-', 1, 0, 'C');
+        }
         
         // Mostrar preço baseado no tipo
         if ($produto['tipo'] == 'kg') {
-            $pdf->Cell(40, 6, 'R$ ' . number_format($preco_por_kg, 2, ',', '.') . '/kg', 1, 0, 'R');
+            $pdf->Cell(40, 6, 'R$ ' . number_format($produto['preco'], 2, ',', '.') . ' (R$ ' . number_format($preco_por_kg, 2, ',', '.') . '/kg)', 1, 0, 'R');
         } else {
-            $pdf->Cell(40, 6, 'R$ ' . number_format($produto['preco'], 2, ',', '.') . '/unidade', 1, 0, 'R');
+            $pdf->Cell(40, 6, 'R$ ' . number_format($produto['preco'], 2, ',', '.') . '', 1, 0, 'R');
         }
         $pdf->Ln();
     }
