@@ -6,7 +6,7 @@ require_once 'config.php';
 requireLogin();
 
 // Incluir TCPDF
-require_once('tcpdf/tcpdf.php');
+require_once('vendor/tecnickcom/tcpdf/tcpdf.php');
 
 // Conectar ao banco
 $db = new PDO('sqlite:' . DB_PATH);
